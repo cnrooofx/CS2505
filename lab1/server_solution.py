@@ -16,24 +16,25 @@ sock.bind(server_address)
 sock.listen(1)
 
 while True:
-    print('*** Waiting for a connection ***')
+    print("*** Waiting for a connection ***")
     connection, client_address = sock.accept()
     try:
-        print('connection from', client_address)
+        print("connection from", client_address)
         message = ""
         while True:
             data = connection.recv(16).decode()
-            if data != "":
-                print('received "%s"' % data)
+            if data:
                 message += data
-                print('sending data back to the client')
+                print("received '%s'" % data)
+                print("sending data back to the client")
                 connection.sendall(data.encode())
             else:
-                print('no more data from', client_address)
+                print("no more data from", client_address)
                 break
-        with open("log.txt", "a") as file:
+        with open("log.txt", "a") as log:
             time = datetime.now().strftime("%c")
-            file.write("[{}] {}".format(time, message))
+            log_message = "[{}] {}\n".format(time, message)
+            log.write(log_message)
 
     finally:
         connection.close()
