@@ -9,10 +9,7 @@ host_ip = socket.gethostbyname(host_name)
 
 print("Server starting on {} {} on port {}".format(host_name, host_ip, port))
 
-server_address = (host_name, port)
-
-sock.bind(server_address)
-
+sock.bind((host_name, port))
 sock.listen(1)
 
 while True:
@@ -31,8 +28,10 @@ while True:
             else:
                 print("no more data from", client_address)
                 break
+
+        # Append the current date and time with the message to the logfile
         with open("log.txt", "a") as log:
-            time = datetime.now().strftime("%c")
+            time = datetime.now().strftime("%c")  # %c is local datetime
             log_message = "[{}] {}\n".format(time, message)
             log.write(log_message)
 
