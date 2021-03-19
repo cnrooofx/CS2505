@@ -3,7 +3,7 @@ from datetime import datetime
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # IPv4, TCP
 
-port = 12002
+port = 12007
 host_name = socket.gethostname()
 host_ip = socket.gethostbyname(host_name)
 
@@ -15,25 +15,22 @@ sock.listen(1)
 while True:
     print("*** Waiting for a connection ***")
     connection, client_address = sock.accept()
+    connection.settimeout(10)
     try:
         print("connection from", client_address)
         message = ""
-        while True:
-            data = connection.recv(16).decode()
-            if data:
-                message += data
-                print("received '%s'" % data)
-                print("sending data back to the client")
-                connection.sendall(data.encode())
-            else:
-                print("no more data from", client_address)
-                break
+        data = connection.recv(16, 0)
+        while data:
+            message += data.decode()
+            data = connection.recv(16, 0)
+        print("Received '{}'".format(message))
 
-        # Append the current date and time with the message to the logfile
-        with open("log.txt", "a") as log:
-            time = datetime.now().strftime("%c")  # %c is local datetime
-            log_message = "[{}] {}\n".format(time, message)
-            log.write(log_message)
+        print("Type reply to send or leave blank to quit.")
+        reply = input("--> ")
+        if reply == "":
+            break
+        connection.sendall(reply.encode())
+        print("Replying: {}".format(reply))
 
     finally:
         connection.close()
