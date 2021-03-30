@@ -9,3 +9,7 @@ Introduction to socket programming using loopback interface.
 ## Lab 2
 
 Socket chat program between two different machines.
+
+## Lab 3
+
+HTML Client and server
