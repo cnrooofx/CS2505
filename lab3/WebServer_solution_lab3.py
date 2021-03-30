@@ -11,15 +11,20 @@ while True:
     print("*** Waiting for Connection ***")
 
     connection, addr = sock.accept()
-    print("Connection from", addr)
+    conn_str = "Connection from {}:{}".format(addr[0], addr[1])
+    print(conn_str)
+    print("-" * len(conn_str))
     try:
         request = connection.recv(1024).decode()
-        filename = request.split()[1]
+        print(request, end="")
 
+        filename = request.split()[1]
         with open(filename[1:], "r") as f:
             outputdata = f.read()
 
-        connection.send("HTTP/1.1 200 OK\r\n\r\n".encode())
+        ok_msg = "HTTP/1.1 200 OK\r\n\r\n"
+        print(ok_msg, end="")
+        connection.send(ok_msg.encode())
 
         for i in range(len(outputdata)):
             connection.send(outputdata[i].encode())
@@ -27,10 +32,12 @@ while True:
 
         connection.close()
     except IOError:
-        connection.send("HTTP/1.1 404 Not Found\r\n\r\n".encode())
+        error_msg = "HTTP/1.1 404 Not Found\r\n\r\n"
+        print(error_msg, end="")
+        connection.send(error_msg.encode())
         connection.send("""<html>\n    <head></head>\n    <body>
         <h1>404 Not Found</h1>\n    </body>\n</html>\r\n""".encode())
 
         connection.close()
 
-sock.close()  
+sock.close()
